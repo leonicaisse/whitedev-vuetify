@@ -2,7 +2,7 @@
 
 //////////////////
 
-#### Objectif :
+### Objectif :
 
 Créer une application permettant l'administration d'une bibliothèque de musiques.
 Cette application se décompose en deux pages :
