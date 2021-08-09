@@ -19,10 +19,8 @@ Cette application se décompose en deux pages :
 
 ### Technologies utilisées
 
-- Node.js
-- Express.js
-- MySQL
-- Vue.js / Vuetify
+- API/Back: Api Platform (Symfony, MySQL)
+- Front: Vue.js / Vuetify
 
 ## Installation
 
