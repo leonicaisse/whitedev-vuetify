@@ -2,12 +2,33 @@
   <v-container>
     <v-row @submit.prevent>
       <v-col cols="8">
-        <v-form>
-          <v-text-field v-model="song.title" label="Title" />
-          <v-text-field v-model="song.artist" label="Artist or Band" />
-          <v-text-field v-model="song.year" label="Year" />
-          <v-autocomplete v-model="song.genre" :items="items" label="Genre" />
-          <v-text-field v-model="song.duration" label="Duration (ms)" />
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-text-field
+            v-model="song.title"
+            label="Title"
+            :rules="[rules.required]"
+          />
+          <v-text-field
+            v-model="song.artist"
+            label="Artist or Band"
+            :rules="[rules.required]"
+          />
+          <v-text-field
+            v-model="song.year"
+            label="Year"
+            :rules="[rules.required, rules.year]"
+          />
+          <v-autocomplete
+            v-model="song.genre"
+            :items="items"
+            label="Genre"
+            :rules="[rules.required]"
+          />
+          <v-text-field
+            v-model="song.duration"
+            label="Duration (ms)"
+            :rules="[rules.required, rules.duration]"
+          />
           <v-btn
             :disabled="!valid"
             color="success"
@@ -35,26 +56,40 @@ export default {
     valid: true,
     items: ['Rap', 'Rock', 'Pop', 'Classique'],
     song: {
-      title: null,
-      artist: null,
-      year: null,
-      genre: null,
-      duration: null
+      title: '',
+      artist: '',
+      year: '',
+      genre: '',
+      duration: ''
     },
-    response: null
+    response: null,
+    rules: {
+      required: value => !!value || 'Required.',
+      year: (value) => {
+        const pattern = /^\d{4}$/
+        return pattern.test(value) || 'Invalid year.'
+      },
+      duration: (value) => {
+        const pattern = /^\d+$/
+        return pattern.test(value) || 'Invalid duration.'
+      }
+    }
   }),
 
   methods: {
     async handleSubmit () {
-      const song = this.song
-      const response = await this.$axios.$post('http://localhost:8000/api/songs', {
-        title: song.title,
-        artist: song.artist,
-        year: song.year,
-        genre: song.year,
-        duration: +song.duration
-      })
-      this.response = response
+      if (this.$refs.form.validate()) {
+        const song = this.song
+        const response = await this.$axios.$post('http://localhost:8000/api/songs', {
+          title: song.title,
+          artist: song.artist,
+          year: song.year,
+          genre: song.year,
+          duration: +song.duration
+        })
+        this.response = response
+        this.$refs.form.reset()
+      }
     }
   }
 }

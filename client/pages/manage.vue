@@ -2,6 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="8">
+        <v-text-field v-model="search" label="Title" />
         <v-data-table
           :headers="headers"
           :items="songs"
@@ -14,7 +15,7 @@
       <v-col cols="4">
         <h1>Manage</h1>
         <p>
-          This page allows you to manage existing songs in the library.<br>
+          This page allows you to manage existing songs in the library.<br />
           Simply use the associated actions to edit or delete a song.
         </p>
       </v-col>
@@ -31,6 +32,7 @@ export default {
       songsPerPage: 5,
       loading: true,
       options: {},
+      search: '',
       headers: [
         {
           text: 'Title',
@@ -51,6 +53,12 @@ export default {
         this.getDataFromApi()
       },
       deep: true
+    },
+
+    search: {
+      handler () {
+        this.handleSearch()
+      }
     }
   },
   mounted () {
@@ -60,12 +68,21 @@ export default {
     async getDataFromApi () {
       const { /* sortBy, sortDesc, */ page, itemsPerPage } = this.options
       this.loading = true
-      await this.$axios.get(`http://localhost:8000/api/songs?page=${page}&itemsPerPage=${itemsPerPage}`).then((res) => {
+      // TODO : handle both title and artist search
+      await this.$axios.get(`http://localhost:8000/api/songs?page=${page}&itemsPerPage=${itemsPerPage}${this.search ? '&title=' + this.search : ''}`).then((res) => {
         const data = res.data
         this.songs = data['hydra:member']
         this.totalSongs = data['hydra:totalItems']
         this.loading = false
       })
+    },
+
+    handleSearch () {
+      clearTimeout(this.timeout)
+      const self = this
+      this.timeout = setTimeout(function () {
+        self.getDataFromApi()
+      }, 500)
     }
   }
 }
