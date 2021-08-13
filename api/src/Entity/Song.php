@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\SongRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\Length;
@@ -11,7 +13,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 /**
  * @ORM\Entity(repositoryClass=SongRepository::class)
  */
-#[ApiResource()]
+#[ApiResource(), ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
 class Song
 {
     /**
