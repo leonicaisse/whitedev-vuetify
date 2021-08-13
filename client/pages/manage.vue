@@ -10,6 +10,7 @@
           :server-items-length="totalSongs"
           :items-per-page="songsPerPage"
           :loading="loading"
+          multi-sort
         >
           <template #[`item.actions`]="{ item }">
             <v-icon small class="mr-2" @click="editItem(item)">
@@ -98,6 +99,10 @@
         </p>
       </v-col>
     </v-row>
+
+    {{ options }}
+    <br />
+    {{ processedUrl }}
   </v-container>
 </template>
 
@@ -125,7 +130,6 @@ export default {
         {
           text: 'Title',
           align: 'start',
-          sortable: false,
           value: 'title'
         },
         { text: 'Artist or Band', value: 'artist' },
@@ -134,6 +138,25 @@ export default {
         { text: 'Duration', value: 'duration' },
         { text: 'Actions', value: 'actions', sortable: false }
       ]
+    }
+  },
+
+  computed: {
+    processedUrl () {
+      let url = 'http://localhost:8000/api/songs'
+      const { sortBy, sortDesc, page, itemsPerPage } = this.options
+      url += `?page=${page}&itemsPerPage=${itemsPerPage}`
+      if (this.search) {
+        url += `&title=${this.search}`
+      }
+
+      if (sortBy && sortDesc) {
+        sortBy.forEach((criteria, index) => {
+          url += `&orderBy[${criteria}]=${sortDesc[index] ? 'desc' : 'asc'}`
+        })
+      }
+
+      return url
     }
   },
 
@@ -151,15 +174,16 @@ export default {
       }
     }
   },
+
   mounted () {
     this.getDataFromApi()
   },
+
   methods: {
     async getDataFromApi () {
-      const { /* sortBy, sortDesc, */ page, itemsPerPage } = this.options
       this.loading = true
       // TODO : handle both title and artist search
-      await this.$axios.get(`http://localhost:8000/api/songs?page=${page}&itemsPerPage=${itemsPerPage}${this.search ? '&title=' + this.search : ''}`).then((res) => {
+      await this.$axios.get(this.processedUrl).then((res) => {
         const data = res.data
         this.songs = data['hydra:member']
         this.totalSongs = data['hydra:totalItems']
@@ -222,7 +246,6 @@ export default {
       if (song.year) { editedSong.year = song.year }
       if (song.genre) { editedSong.genre = song.genre }
       if (song.duration) { editedSong.duration = +song.duration }
-      console.log(editedSong)
       const response = await this.$axios.$put(`http://localhost:8000/api/songs/${id}`, editedSong)
       this.response = response
       this.getDataFromApi()
