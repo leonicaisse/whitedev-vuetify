@@ -1,0 +1,23 @@
+[
+  {
+    "name": "manage",
+    "path": "/manage",
+    "component": "/Users/leo/Public/whitedev-vuetify/client/pages/manage.vue",
+    "chunkName": "pages/manage",
+    "_name": "_573cce92"
+  },
+  {
+    "name": "new",
+    "path": "/new",
+    "component": "/Users/leo/Public/whitedev-vuetify/client/pages/new.vue",
+    "chunkName": "pages/new",
+    "_name": "_7482633e"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "/Users/leo/Public/whitedev-vuetify/client/pages/index.vue",
+    "chunkName": "pages/index",
+    "_name": "_e0696020"
+  }
+]
