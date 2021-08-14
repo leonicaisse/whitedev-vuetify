@@ -2,21 +2,20 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\SongRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Repository\SongRepository;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Regex;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Filter\CustomSearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=SongRepository::class)
  */
 #[ApiResource()]
-#[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
 #[ApiFilter(OrderFilter::class, properties: ['title', 'artist', 'year', 'genre', 'duration'], arguments: ['orderParameterName' => 'orderBy'])]
+#[ApiFilter(CustomSearchFilter::class)]
 class Song
 {
     /**
