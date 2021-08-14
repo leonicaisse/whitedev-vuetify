@@ -20,7 +20,7 @@
           />
           <v-autocomplete
             v-model="song.genre"
-            :items="items"
+            :items="genres"
             label="Genre"
             :rules="[rules.required]"
           />
@@ -54,7 +54,7 @@
 export default {
   data: () => ({
     valid: true,
-    items: ['Rap', 'Rock', 'Pop', 'Classique'],
+    genres: ['Classical', 'Dance', 'Disco', 'Folk', 'Hip-Hop', 'Jazz', 'Latino', 'Metal', 'Pop', 'Rock', 'Synthpop'],
     song: {
       title: '',
       artist: '',

@@ -12,6 +12,9 @@
           :loading="loading"
           multi-sort
         >
+          <template #[`item.duration`]="{ item }">
+            {{ millisecondsToDuration(item.duration) }}
+          </template>
           <template #[`item.actions`]="{ item }">
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
@@ -46,8 +49,9 @@
                         <v-text-field v-model="editedItem.year" label="Year" />
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
-                        <v-text-field
+                        <v-autocomplete
                           v-model="editedItem.genre"
+                          :items="genres"
                           label="Genre"
                         />
                       </v-col>
@@ -99,10 +103,6 @@
         </p>
       </v-col>
     </v-row>
-
-    {{ options }}
-    <br />
-    {{ processedUrl }}
   </v-container>
 </template>
 
@@ -126,6 +126,7 @@ export default {
         genre: '',
         duration: 0
       },
+      genres: ['Classical', 'Dance', 'Disco', 'Folk', 'Hip-Hop', 'Jazz', 'Latino', 'Metal', 'Pop', 'Rock', 'Synthpop'],
       headers: [
         {
           text: 'Title',
@@ -142,12 +143,13 @@ export default {
   },
 
   computed: {
-    processedUrl () {
+    computedUrl () {
       let url = 'http://localhost:8000/api/songs'
       const { sortBy, sortDesc, page, itemsPerPage } = this.options
       url += `?page=${page}&itemsPerPage=${itemsPerPage}`
+
       if (this.search) {
-        url += `&title=${this.search}`
+        url += `&search=${this.search}`
       }
 
       if (sortBy && sortDesc) {
@@ -183,12 +185,18 @@ export default {
     async getDataFromApi () {
       this.loading = true
       // TODO : handle both title and artist search
-      await this.$axios.get(this.processedUrl).then((res) => {
+      await this.$axios.get(this.computedUrl).then((res) => {
         const data = res.data
         this.songs = data['hydra:member']
         this.totalSongs = data['hydra:totalItems']
         this.loading = false
       })
+    },
+
+    millisecondsToDuration (milliseconds) {
+      const minutes = Math.floor(milliseconds / 60000)
+      const seconds = ((milliseconds % 60000) / 1000).toFixed(0)
+      return minutes + ':' + (seconds < 10 ? '0' : '') + seconds
     },
 
     handleSearch () {
