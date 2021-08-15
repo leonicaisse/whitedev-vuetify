@@ -1,18 +1,24 @@
 export default {
-  getUrl (options, search) {
+  getUrl (options = null, search = null) {
     let url = 'http://localhost:8000/api/songs'
-    const { sortBy, sortDesc, page, itemsPerPage } = options
-    url += `?page=${page}&itemsPerPage=${itemsPerPage}`
+    if (options) {
+      const { page, itemsPerPage } = options
+      url += `?page=${page}&itemsPerPage=${itemsPerPage}`
+    }
 
     if (search) {
       url += `&search=${search}`
     }
 
-    if (sortBy && sortDesc) {
-      sortBy.forEach((criteria, index) => {
-        url += `&orderBy[${criteria}]=${sortDesc[index] ? 'desc' : 'asc'}`
-      })
+    if (options) {
+      const { sortBy, sortDesc } = options
+      if (sortBy && sortDesc) {
+        sortBy.forEach((criteria, index) => {
+          url += `&orderBy[${criteria}]=${sortDesc[index] ? 'desc' : 'asc'}`
+        })
+      }
     }
+
     return url
   }
 }

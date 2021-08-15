@@ -2,6 +2,13 @@
   <v-container>
     <v-row>
       <v-col cols="8">
+        <v-alert v-if="response" :type="alertType" dismissible>
+          {{
+            response.status !== 200 && response.status !== 204
+              ? `error ${response.status} : `
+              : ""
+          }}{{ response.message }}
+        </v-alert>
         <v-text-field v-model="search" label="Title" />
         <v-data-table
           :headers="headers"
@@ -19,9 +26,7 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteItem(item)">
-              mdi-delete
-            </v-icon>
+            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
           </template>
           <template #top>
             <v-dialog v-model="dialogEdit" max-width="500px">
@@ -72,16 +77,14 @@
                   <v-btn color="blue darken-1" text @click="close">
                     Cancel
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="save">
-                    Save
-                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
               <v-card>
                 <v-card-title class="text-h5">
-                  Are you sure you want to delete this item?<br>
+                  Are you sure you want to delete this item?<br />
                   <i>(#{{ editedItem.id }}) {{ editedItem.title }}</i>
                 </v-card-title>
                 <v-card-actions>
@@ -102,7 +105,7 @@
       <v-col cols="4">
         <h1>Manage</h1>
         <p>
-          This page allows you to manage existing songs in the library.<br>
+          This page allows you to manage existing songs in the library.<br />
           Simply use the associated actions to edit or delete a song.
         </p>
       </v-col>
@@ -121,6 +124,7 @@ export default {
       loading: true,
       options: {},
       search: '',
+      response: '',
       dialogEdit: false,
       dialogDelete: false,
       editedIndex: -1,
@@ -150,6 +154,11 @@ export default {
   computed: {
     computedUrl () {
       return processedApiUrl.getUrl(this.options, this.search)
+    },
+
+    alertType () {
+      const status = this.response.status
+      return (status === 400 || status === 404 || status === 500 ? 'error' : 'success')
     }
   },
 
@@ -214,10 +223,36 @@ export default {
 
     async deleteItemConfirm () {
       const id = this.editedId
-      const response = await this.$axios.$delete(`http://localhost:8000/api/songs/${id}`)
+      const response = await this.$axios.$delete(`${processedApiUrl.getUrl()}/${id}`)
+        .then((res) => {
+          return (this.response = {
+            status: 204,
+            message: `Song "${this.editedItem.title}" has been deleted`
+          })
+        })
+        .catch((err) => {
+          if (err.response.status === 400) {
+            return (this.response = {
+              status: 400,
+              message: 'There was Some Problem, while processing your Request'
+            })
+          }
+          if (err.response.status === 404) {
+            return (this.response = {
+              status: 404,
+              message: 'API Route is Missing or Undefined'
+            })
+          }
+          if (err.response.status === 500) {
+            return (this.response = {
+              status: 500,
+              message: 'Server Error, please try again later'
+            })
+          }
+        })
       this.getDataFromApi()
       this.closeDelete()
-      return response
+      this.response = response
     },
 
     close () {
@@ -245,7 +280,33 @@ export default {
       if (song.year) { editedSong.year = song.year }
       if (song.genre) { editedSong.genre = song.genre }
       if (song.duration) { editedSong.duration = +song.duration }
-      const response = await this.$axios.$put(`http://localhost:8000/api/songs/${id}`, editedSong)
+      const response = await this.$axios.$put(`${processedApiUrl.getUrl()}/${id}`, editedSong)
+        .then((res) => {
+          return (this.response = {
+            status: 200,
+            message: `Changes have been saved for song "${res.title}"`
+          })
+        })
+        .catch((err) => {
+          if (err.response.status === 400) {
+            return (this.response = {
+              status: 400,
+              message: 'There was Some Problem, while processing your Request'
+            })
+          }
+          if (err.response.status === 404) {
+            return (this.response = {
+              status: 404,
+              message: 'API Route is Missing or Undefined'
+            })
+          }
+          if (err.response.status === 500) {
+            return (this.response = {
+              status: 500,
+              message: 'Server Error, please try again later'
+            })
+          }
+        })
       this.response = response
       this.getDataFromApi()
       this.close()
