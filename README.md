@@ -39,7 +39,7 @@ Pour lancer les tests :
 npm run test
 ```
 
-### Api
+### API
 
 L'API nécessite une version supérieure ou égale à PHP 8.0
 
