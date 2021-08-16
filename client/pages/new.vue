@@ -9,42 +9,55 @@
               : ""
           }}{{ response.message }}
         </v-alert>
-        <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field
-            v-model="song.title"
-            label="Title"
-            :rules="[rules.required]"
-          />
-          <v-text-field
-            v-model="song.artist"
-            label="Artist or Band"
-            :rules="[rules.required]"
-          />
-          <v-text-field
-            v-model="song.year"
-            label="Year"
-            :rules="[rules.required, rules.year]"
-          />
-          <v-autocomplete
-            v-model="song.genre"
-            :items="genres"
-            label="Genre"
-            :rules="[rules.required]"
-          />
-          <v-text-field
-            v-model="song.duration"
-            label="Duration (ms)"
-            :rules="[rules.required, rules.duration]"
-          />
-          <v-btn
-            :disabled="!valid"
-            color="success"
-            class="mr-4"
-            @click="handleSubmit"
-          >
-            Submit
-          </v-btn>
-        </v-form>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5"> New song entry </span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+              @submit.prevent="save"
+            >
+              <v-text-field
+                v-model="song.title"
+                label="Title"
+                :rules="[rules.required]"
+              />
+              <v-text-field
+                v-model="song.artist"
+                label="Artist or Band"
+                :rules="[rules.required]"
+              />
+              <v-text-field
+                v-model="song.year"
+                label="Year"
+                :rules="[rules.required, rules.year]"
+              />
+              <v-autocomplete
+                v-model="song.genre"
+                :items="genres"
+                label="Genre"
+                clearable
+              />
+              <v-text-field
+                v-model="song.duration"
+                label="Duration (ms)"
+                :rules="[rules.required, rules.duration]"
+              />
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+            <v-btn :disabled="!valid" color="blue darken-1" text @click="save">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
       </v-col>
       <v-col cols="4">
         <h1>Create New</h1>
@@ -92,7 +105,7 @@ export default {
   },
 
   methods: {
-    async handleSubmit () {
+    async save () {
       if (this.$refs.form.validate()) {
         const song = this.song
         const response = await this.$axios.$post(processedApiUrl.getUrl(), {

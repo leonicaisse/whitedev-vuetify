@@ -1,77 +1,62 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
+  <v-container>
+    <v-card>
+      <v-card-title class="headline">
+        Application Whitedev-Vuetify
+      </v-card-title>
+      <hr>
+      <v-card-text>
+        <section id="goals" class="my-5">
+          <h2 class="mb-2">Objectif :</h2>
           <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
+            Créer une application permettant l'administration d'une bibliothèque
+            de musiques. Cette application se décompose en deux pages :
           </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+          <ul>
+            <li>
+              La première page "Nouvelle Entrée", qui comporte un formulaire
+              permettant l'ajout d'une nouvelle entrée dans la bibliothèque.
+            </li>
+            <li>
+              La seconde page "Bibliothèque", qui affiche la liste des entrées
+              présentes dans la bibliothèque, ainsi que des actions CRUD
+              associées à ces entrées. Cette page comporte également un champs
+              de recherche permettant de rechercher un morceau en fonction du
+              titre ou de l'artiste / groupe.
+            </li>
+          </ul>
+        </section>
+        <section id="bonus" class="my-5">
+          <h2 class="mb-2">Bonus</h2>
+          <ul>
+            <li>L'application utilise Vuetify</li>
+            <li>
+              Les colonnes de la bibliothèque permettent d'en trier l'affichage
+              selon les différents libellés (Titre, Artiste, etc.)
+            </li>
+            <li>
+              Un test unitaire doit être écrit pour une des méthodes mises en
+              place
+            </li>
+            <li>La mise en page est libre</li>
+          </ul>
+        </section>
+        <section id="technologies" class="my-5">
+          <h2 class="mb-2">Technologies utilisées</h2>
+          <ul>
+            <li>API/Back: Api Platform (Symfony, MySQL)</li>
+            <li>Front: Vue.js / Vuetify</li>
+          </ul>
+        </section>
+        <section id="installation" class="my-5">
+          <h2 class="mb-2">Installation</h2>
+          <code>A REDIGER</code>
+        </section>
+        <section id="credits" class="my-5">
+          <h2 class="mb-2">Réalisé par</h2>
+          <p><a href="https://leonicaisse.fr">Léo Nicaisse</a>, 2021</p>
+        </section>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>

@@ -2,14 +2,10 @@
   <v-container>
     <v-row>
       <v-col cols="8">
-        <v-alert v-if="response" :type="alertType" dismissible>
-          {{
-            response.status !== 200 && response.status !== 204
-              ? `error ${response.status} : `
-              : ""
-          }}{{ response.message }}
+        <v-alert v-if="response" :type="response.status" dismissible>
+          {{ response.message }}
         </v-alert>
-        <v-text-field v-model="search" label="Title" />
+        <v-text-field v-model="search" label="Search..." />
         <v-data-table
           :headers="headers"
           :items="songs"
@@ -38,38 +34,34 @@
                 </v-card-title>
 
                 <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.title"
-                          label="Title"
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.artist"
-                          label="Artist or Band"
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field v-model="editedItem.year" label="Year" />
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-autocomplete
-                          v-model="editedItem.genre"
-                          :items="genres"
-                          label="Genre"
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.duration"
-                          label="Duration (ms)"
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-container>
+                  <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="save">
+                    <v-text-field
+                      v-model="editedItem.title"
+                      label="Title"
+                      :rules="[rules.required]"
+                    />
+                    <v-text-field
+                      v-model="editedItem.artist"
+                      label="Artist or Band"
+                      :rules="[rules.required]"
+                    />
+                    <v-text-field
+                      v-model="editedItem.year"
+                      label="Year"
+                      :rules="[rules.required, rules.year]"
+                    />
+                    <v-autocomplete
+                      v-model="editedItem.genre"
+                      :items="genres"
+                      label="Genre"
+                      clearable
+                    />
+                    <v-text-field
+                      v-model="editedItem.duration"
+                      label="Duration (ms)"
+                      :rules="[rules.required, rules.duration]"
+                    />
+                  </v-form>
                 </v-card-text>
 
                 <v-card-actions>
@@ -77,7 +69,14 @@
                   <v-btn color="blue darken-1" text @click="close">
                     Cancel
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                  <v-btn
+                    :disabled="!valid"
+                    color="blue darken-1"
+                    text
+                    @click="save"
+                  >
+                    Save
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -135,6 +134,18 @@ export default {
         genre: '',
         duration: 0
       },
+      valid: true,
+      rules: {
+        required: value => !!value || 'Required.',
+        year: (value) => {
+          const pattern = /^\d{4}$/
+          return pattern.test(value) || 'Invalid year.'
+        },
+        duration: (value) => {
+          const pattern = /^\d+$/
+          return pattern.test(value) || 'Invalid duration.'
+        }
+      },
       genres: ['Classical', 'Dance', 'Disco', 'Folk', 'Hip-Hop', 'Jazz', 'Latino', 'Metal', 'Pop', 'Rock', 'Synthpop'],
       headers: [
         {
@@ -154,11 +165,6 @@ export default {
   computed: {
     computedUrl () {
       return processedApiUrl.getUrl(this.options, this.search)
-    },
-
-    alertType () {
-      const status = this.response.status
-      return (status === 400 || status === 404 || status === 500 ? 'error' : 'success')
     }
   },
 
@@ -226,29 +232,16 @@ export default {
       const response = await this.$axios.$delete(`${processedApiUrl.getUrl()}/${id}`)
         .then((res) => {
           return (this.response = {
-            status: 204,
+            status: 'success',
             message: `Song "${this.editedItem.title}" has been deleted`
           })
         })
         .catch((err) => {
-          if (err.response.status === 400) {
-            return (this.response = {
-              status: 400,
-              message: 'There was Some Problem, while processing your Request'
-            })
-          }
-          if (err.response.status === 404) {
-            return (this.response = {
-              status: 404,
-              message: 'API Route is Missing or Undefined'
-            })
-          }
-          if (err.response.status === 500) {
-            return (this.response = {
-              status: 500,
-              message: 'Server Error, please try again later'
-            })
-          }
+          return (this.response = {
+            status: 'error',
+            message: 'Something went wrong, please try again later.',
+            error: err
+          })
         })
       this.getDataFromApi()
       this.closeDelete()
@@ -272,44 +265,33 @@ export default {
     },
 
     async save () {
-      const song = this.editedItem
-      const id = this.editedId
-      const editedSong = {}
-      if (song.title) { editedSong.title = song.title }
-      if (song.artist) { editedSong.artist = song.artist }
-      if (song.year) { editedSong.year = song.year }
-      if (song.genre) { editedSong.genre = song.genre }
-      if (song.duration) { editedSong.duration = +song.duration }
-      const response = await this.$axios.$put(`${processedApiUrl.getUrl()}/${id}`, editedSong)
-        .then((res) => {
-          return (this.response = {
-            status: 200,
-            message: `Changes have been saved for song "${res.title}"`
+      if (this.$refs.form.validate()) {
+        const song = this.editedItem
+        const id = this.editedId
+        const editedSong = {}
+        if (song.title) { editedSong.title = song.title }
+        if (song.artist) { editedSong.artist = song.artist }
+        if (song.year) { editedSong.year = song.year }
+        if (song.genre) { editedSong.genre = song.genre }
+        if (song.duration) { editedSong.duration = +song.duration }
+        const response = await this.$axios.$put(`${processedApiUrl.getUrl()}/${id}`, editedSong)
+          .then((res) => {
+            return (this.response = {
+              status: 'success',
+              message: `Changes have been saved for song "${res.title}"`
+            })
           })
-        })
-        .catch((err) => {
-          if (err.response.status === 400) {
+          .catch((err) => {
             return (this.response = {
-              status: 400,
-              message: 'There was Some Problem, while processing your Request'
+              status: 'error',
+              message: 'Something went wrong, please try again later.',
+              error: err
             })
-          }
-          if (err.response.status === 404) {
-            return (this.response = {
-              status: 404,
-              message: 'API Route is Missing or Undefined'
-            })
-          }
-          if (err.response.status === 500) {
-            return (this.response = {
-              status: 500,
-              message: 'Server Error, please try again later'
-            })
-          }
-        })
-      this.response = response
-      this.getDataFromApi()
-      this.close()
+          })
+        this.response = response
+        this.getDataFromApi()
+        this.close()
+      }
     }
   }
 }
