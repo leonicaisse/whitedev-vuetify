@@ -2,12 +2,8 @@
   <v-container>
     <v-row @submit.prevent>
       <v-col cols="8">
-        <v-alert v-if="response" :type="alertType" dismissible>
-          {{
-            response.status !== 200 && response.status !== 204
-              ? `error ${response.status} : `
-              : ""
-          }}{{ response.message }}
+        <v-alert v-if="response" :type="response.status" dismissible>
+          {{ response.message }}
         </v-alert>
         <v-card>
           <v-card-title>
@@ -52,7 +48,6 @@
 
           <v-card-actions>
             <v-spacer />
-            <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
             <v-btn :disabled="!valid" color="blue darken-1" text @click="save">
               Save
             </v-btn>
@@ -62,7 +57,7 @@
       <v-col cols="4">
         <h1>Create New</h1>
         <p>
-          This page allows you to add a new song to the library.<br />
+          This page allows you to add a new song to the library.<br>
           Simply fill the fields and press submit to register a new song.
         </p>
       </v-col>
@@ -75,7 +70,19 @@ import processedApiUrl from '@/services/ProcessedApiUrl'
 export default {
   data: () => ({
     valid: true,
-    genres: ['Classical', 'Dance', 'Disco', 'Folk', 'Hip-Hop', 'Jazz', 'Latino', 'Metal', 'Pop', 'Rock', 'Synthpop'],
+    genres: [
+      'Classical',
+      'Dance',
+      'Disco',
+      'Folk',
+      'Hip-Hop',
+      'Jazz',
+      'Latino',
+      'Metal',
+      'Pop',
+      'Rock',
+      'Synthpop'
+    ],
     song: {
       title: '',
       artist: '',
@@ -97,49 +104,30 @@ export default {
     }
   }),
 
-  computed: {
-    alertType () {
-      const status = this.response.status
-      return (status === 400 || status === 404 || status === 500 ? 'error' : 'success')
-    }
-  },
-
   methods: {
     async save () {
       if (this.$refs.form.validate()) {
         const song = this.song
-        const response = await this.$axios.$post(processedApiUrl.getUrl(), {
-          title: song.title,
-          artist: song.artist,
-          year: song.year,
-          genre: song.genre,
-          duration: +song.duration
-        })
+        const response = await this.$axios
+          .$post(processedApiUrl.getUrl(), {
+            title: song.title,
+            artist: song.artist,
+            year: song.year,
+            genre: song.genre,
+            duration: +song.duration
+          })
           .then((res) => {
             return (this.response = {
-              status: 200,
+              status: 'success',
               message: `Song "${res.title}" has been saved`
             })
           })
           .catch((err) => {
-            if (err.response.status === 400) {
-              return (this.response = {
-                status: 400,
-                message: 'There was Some Problem, while processing your Request'
-              })
-            }
-            if (err.response.status === 404) {
-              return (this.response = {
-                status: 404,
-                message: 'API Route is Missing or Undefined'
-              })
-            }
-            if (err.response.status === 500) {
-              return (this.response = {
-                status: 500,
-                message: 'Server Error, please try again later'
-              })
-            }
+            return (this.response = {
+              status: 'error',
+              message: 'Something went wrong, please try again later.',
+              error: err
+            })
           })
         this.response = response
         this.$refs.form.reset()
