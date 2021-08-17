@@ -36,7 +36,7 @@
                 v-model="song.genre"
                 :items="genres"
                 label="Genre"
-                clearable
+                :rules="[rules.required]"
               />
               <v-text-field
                 v-model="song.duration"

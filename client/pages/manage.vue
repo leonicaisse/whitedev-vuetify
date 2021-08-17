@@ -22,7 +22,9 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+            <v-icon small @click="deleteItem(item)">
+              mdi-delete
+            </v-icon>
           </template>
           <template #top>
             <v-dialog v-model="dialogEdit" max-width="500px">
@@ -34,7 +36,12 @@
                 </v-card-title>
 
                 <v-card-text>
-                  <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="save">
+                  <v-form
+                    ref="form"
+                    v-model="valid"
+                    lazy-validation
+                    @submit.prevent="save"
+                  >
                     <v-text-field
                       v-model="editedItem.title"
                       label="Title"
@@ -54,7 +61,7 @@
                       v-model="editedItem.genre"
                       :items="genres"
                       label="Genre"
-                      clearable
+                      :rules="[rules.required]"
                     />
                     <v-text-field
                       v-model="editedItem.duration"
@@ -83,7 +90,7 @@
             <v-dialog v-model="dialogDelete" max-width="500px">
               <v-card>
                 <v-card-title class="text-h5">
-                  Are you sure you want to delete this item?<br />
+                  Are you sure you want to delete this item?<br>
                   <i>(#{{ editedItem.id }}) {{ editedItem.title }}</i>
                 </v-card-title>
                 <v-card-actions>
@@ -104,7 +111,7 @@
       <v-col cols="4">
         <h1>Manage</h1>
         <p>
-          This page allows you to manage existing songs in the library.<br />
+          This page allows you to manage existing songs in the library.<br>
           Simply use the associated actions to edit or delete a song.
         </p>
       </v-col>
@@ -146,7 +153,19 @@ export default {
           return pattern.test(value) || 'Invalid duration.'
         }
       },
-      genres: ['Classical', 'Dance', 'Disco', 'Folk', 'Hip-Hop', 'Jazz', 'Latino', 'Metal', 'Pop', 'Rock', 'Synthpop'],
+      genres: [
+        'Classical',
+        'Dance',
+        'Disco',
+        'Folk',
+        'Hip-Hop',
+        'Jazz',
+        'Latino',
+        'Metal',
+        'Pop',
+        'Rock',
+        'Synthpop'
+      ],
       headers: [
         {
           text: 'Title',
@@ -229,7 +248,8 @@ export default {
 
     async deleteItemConfirm () {
       const id = this.editedId
-      const response = await this.$axios.$delete(`${processedApiUrl.getUrl()}/${id}`)
+      const response = await this.$axios
+        .$delete(`${processedApiUrl.getUrl()}/${id}`)
         .then((res) => {
           return (this.response = {
             status: 'success',
@@ -269,12 +289,23 @@ export default {
         const song = this.editedItem
         const id = this.editedId
         const editedSong = {}
-        if (song.title) { editedSong.title = song.title }
-        if (song.artist) { editedSong.artist = song.artist }
-        if (song.year) { editedSong.year = song.year }
-        if (song.genre) { editedSong.genre = song.genre }
-        if (song.duration) { editedSong.duration = +song.duration }
-        const response = await this.$axios.$put(`${processedApiUrl.getUrl()}/${id}`, editedSong)
+        if (song.title) {
+          editedSong.title = song.title
+        }
+        if (song.artist) {
+          editedSong.artist = song.artist
+        }
+        if (song.year) {
+          editedSong.year = song.year
+        }
+        if (song.genre) {
+          editedSong.genre = song.genre
+        }
+        if (song.duration) {
+          editedSong.duration = +song.duration
+        }
+        const response = await this.$axios
+          .$put(`${processedApiUrl.getUrl()}/${id}`, editedSong)
           .then((res) => {
             return (this.response = {
               status: 'success',
