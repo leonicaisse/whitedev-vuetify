@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints\Regex;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Filter\CustomSearchFilter;
+use Symfony\Component\Validator\Constraints\Choice;
 
 /**
  * @ORM\Entity(repositoryClass=SongRepository::class)
@@ -41,9 +42,25 @@ class Song
     #[Regex(pattern: "/^\d{4}$/", message: "Veuillez entrer une année valide")]
     private $year;
 
+
+    const GENRES = [
+      'Classical',
+      'Dance',
+      'Disco',
+      'Folk',
+      'Hip-Hop',
+      'Jazz',
+      'Latino',
+      'Metal',
+      'Pop',
+      'Rock',
+      'Synthpop'
+    ];
+
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
+    #[Choice(choices: Song::GENRES, message: "Veuillez choisir un genre valide")]
     private $genre;
 
     /**
