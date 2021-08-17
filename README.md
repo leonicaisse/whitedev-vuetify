@@ -58,7 +58,7 @@ cd api && composer install
 Ouvrez le fichier .env et configurez la connexion à la base de données, puis créez cette base grâce aux commandes suivantes
 ```sh
 php bin/console doctrine:database:create
-php bin/console doctrine:schema:create
+php bin/console doctrine:migrations:migrate
 ```
 
 Chargez ensuite les fixtures (données pré-enregistrées)
