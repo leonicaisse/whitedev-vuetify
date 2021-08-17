@@ -4,12 +4,10 @@
       <v-card-title class="headline">
         Application Whitedev-Vuetify
       </v-card-title>
-      <hr>
+      <hr />
       <v-card-text>
         <section id="goals" class="my-5">
-          <h2 class="mb-2">
-            Objectif :
-          </h2>
+          <h2 class="mb-2">Objectif :</h2>
           <p>
             Créer une application permettant l'administration d'une bibliothèque
             de musiques. Cette application se décompose en deux pages :
@@ -29,9 +27,7 @@
           </ul>
         </section>
         <section id="bonus" class="my-5">
-          <h2 class="mb-2">
-            Bonus
-          </h2>
+          <h2 class="mb-2">Bonus</h2>
           <ul>
             <li>L'application utilise Vuetify</li>
             <li>
@@ -46,18 +42,14 @@
           </ul>
         </section>
         <section id="technologies" class="my-5">
-          <h2 class="mb-2">
-            Technologies utilisées
-          </h2>
+          <h2 class="mb-2">Technologies utilisées</h2>
           <ul>
             <li>API/Back: Api Platform (Symfony, MySQL)</li>
             <li>Front: Vue.js (Nuxt) / Vuetify</li>
           </ul>
         </section>
         <section id="installation" class="my-5">
-          <h2 class="mb-2">
-            Installation
-          </h2>
+          <h2 class="mb-2">Installation</h2>
 
           <section id="client" class="my-5">
             <h3>Client</h3>
@@ -86,15 +78,19 @@
                 installez Symfony CLI
               </p>
               <code>curl -sS https://get.symfony.com/cli/installer | bash</code>
-              <p class="mt-3 mb-0">Puis installez les dépendences de l'application :</p>
+              <p class="mt-3 mb-0">
+                Puis installez les dépendences de l'application :
+              </p>
               <code>cd api && composer install</code>
               <p class="mt-3 mb-0">
                 Ouvrez le fichier .env et configurez la connexion à la base de
                 données, puis créez cette base grâce aux commandes suivantes :
               </p>
-              <code>php bin/console doctrine:database:create</code><br>
-              <code>php bin/console doctrine:schema:create</code>
-              <p class="mt-3 mb-0">Chargez ensuite les fixtures (données pré-enregistrées)</p>
+              <code>php bin/console doctrine:database:create</code><br />
+              <code>php bin/console doctrine:migrations:migrate</code>
+              <p class="mt-3 mb-0">
+                Chargez ensuite les fixtures (données pré-enregistrées)
+              </p>
               <code>php bin/console doctrine:fixtures:load</code>
             </div>
             <div class="my-3">
@@ -104,9 +100,7 @@
           </section>
         </section>
         <section id="credits" class="my-5">
-          <h2 class="mb-2">
-            Réalisé par
-          </h2>
+          <h2 class="mb-2">Réalisé par</h2>
           <p><a href="https://leonicaisse.fr">Léo Nicaisse</a>, 2021</p>
         </section>
       </v-card-text>
